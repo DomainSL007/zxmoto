@@ -8,30 +8,37 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --orange:   #FF6B00;      /* ZXMOTO primary — throttle orange */
-    --orange2:  #E05A00;      /* darker orange for hover */
-    --red:      #C0392B;      /* ZXMOTO secondary — brake red */
-    --bg:       #0F0F0F;      /* near-black asphalt */
-    --surface:  #181818;      /* dark carbon card */
-    --surface2: #1F1F1F;      /* input bg */
-    --border:   #2C2C2C;      /* subtle border */
-    --text:     #B0ADA8;      /* warm grey text */
-    --bright:   #F5F5F0;      /* off-white heading */
-    --muted:    #4A4845;      /* dimmed text */
+    --orange:   #FF6B00;
+    --orange2:  #E05A00;
+    --red:      #C0392B;
+    --bg:       #0F0F0F;
+    --surface:  #181818;
+    --surface2: #1F1F1F;
+    --border:   #2C2C2C;
+    --text:     #B0ADA8;
+    --bright:   #F5F5F0;
+    --muted:    #4A4845;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%; /* prevent iOS font inflation */
+  }
 
   body {
     font-family: 'Barlow', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
+    min-height: 100dvh; /* fills correctly when mobile address bar hides */
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 24px;
+    padding: 72px 16px 28px; /* top clears the fixed lang-bar */
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent; /* kill blue tap flash on iOS */
   }
 
   body[dir="rtl"] { font-family: 'Segoe UI', Tahoma, sans-serif; }
@@ -55,28 +62,30 @@
     pointer-events: none;
     z-index: 0;
   }
-  /* Orange speed-streak glow top-left, red ember glow bottom-right */
   body::after {
     content: '';
     position: fixed;
     inset: 0;
     background:
-      radial-gradient(ellipse 65% 45% at 0% 0%,   rgba(255,107,0,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 65% 45% at 0% 0%,    rgba(255,107,0,0.09) 0%, transparent 60%),
       radial-gradient(ellipse 50% 60% at 100% 100%, rgba(192,57,43,0.07) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
   }
 
-  /* ── Lang switcher (top bar) ── */
+  /* ── Lang switcher ── */
   .lang-bar {
     position: fixed;
-    top: 14px;
-    right: 14px;
+    top: 12px;
+    right: 12px;
     z-index: 100;
     display: flex;
     gap: 6px;
+    flex-wrap: wrap;
+    max-width: calc(100vw - 24px);
   }
-  body[dir="rtl"] .lang-bar { right: auto; left: 14px; }
+  body[dir="rtl"] .lang-bar { right: auto; left: 12px; }
+
   .lang-pill {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -84,15 +93,20 @@
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.5px;
-    padding: 5px 10px;
+    width: 44px;          /* minimum touch target width */
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 1px;
     cursor: pointer;
     transition: all 0.18s;
     font-family: 'Barlow Condensed', sans-serif;
     text-transform: uppercase;
     clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+    touch-action: manipulation; /* eliminate 300ms tap delay */
   }
-  .lang-pill:hover, .lang-pill.active {
+  .lang-pill.active {
     border-color: var(--orange);
     color: var(--orange);
     background: rgba(255,107,0,0.07);
@@ -108,25 +122,29 @@
 
   .ornament {
     text-align: center;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
     animation: fadeDown 0.6s ease both;
+    padding: 0 8px;
   }
   .ornament-line {
     display: inline-flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     color: var(--orange);
-    font-size: 10px;
-    letter-spacing: 5px;
+    font-size: 9px;
+    letter-spacing: 4px;
     text-transform: uppercase;
     font-family: 'Barlow Condensed', sans-serif;
     font-weight: 600;
     opacity: 0.9;
+    word-break: break-word;
+    text-align: center;
   }
   .ornament-line::before,
   .ornament-line::after {
     content: '';
-    width: 44px; height: 1px;
+    width: 28px; height: 1px;
+    flex-shrink: 0;
     background: linear-gradient(90deg, transparent, var(--orange), transparent);
     opacity: 0.35;
   }
@@ -142,7 +160,7 @@
     text-transform: uppercase;
     padding: 4px 16px;
     border-radius: 1px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     animation: fadeDown 0.6s 0.1s ease both;
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
   }
@@ -151,13 +169,12 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 2px;
-    padding: 52px 48px;
+    padding: 36px 20px;
     text-align: center;
     animation: fadeUp 0.7s 0.2s ease both;
     position: relative;
     box-shadow: 0 0 80px rgba(255,107,0,0.05), inset 0 1px 0 rgba(255,255,255,0.03);
   }
-  /* Diagonal speed-slash corners */
   .card::before {
     content: '';
     position: absolute;
@@ -176,21 +193,21 @@
 
   h1 {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: clamp(2.4rem, 8vw, 3.6rem);
+    font-size: clamp(2rem, 10vw, 3.6rem);
     font-weight: 800;
     letter-spacing: 3px;
-    line-height: 1;
-    margin-bottom: 20px;
+    line-height: 1.05;
+    margin-bottom: 16px;
     color: var(--bright);
     text-transform: uppercase;
-    text-shadow: 0 0 40px rgba(255,107,0,0.15);
+    word-break: break-all; /* prevent overflow on tiny screens */
   }
   .tld { color: var(--orange); }
 
   .divider {
     width: 48px; height: 2px;
     background: linear-gradient(90deg, var(--orange), var(--red));
-    margin: 0 auto 20px;
+    margin: 0 auto 18px;
     opacity: 0.7;
   }
 
@@ -199,18 +216,17 @@
     font-size: 15px;
     line-height: 1.75;
     max-width: 420px;
-    margin: 0 auto 28px;
+    margin: 0 auto 22px;
     font-weight: 400;
   }
 
   .price-block {
-    margin: 28px 0;
-    padding: 20px;
+    margin: 22px 0;
+    padding: 16px;
     border: 1px solid rgba(255,107,0,0.2);
     border-left: 3px solid var(--orange);
     border-radius: 2px;
     background: rgba(255,107,0,0.04);
-    position: relative;
   }
   .price-label {
     font-family: 'Barlow Condensed', sans-serif;
@@ -223,14 +239,15 @@
   }
   .price {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 2.1rem;
+    font-size: clamp(1.4rem, 5.5vw, 2.1rem);
     color: var(--orange);
     font-weight: 700;
     letter-spacing: 2px;
     text-shadow: 0 0 24px rgba(255,107,0,0.25);
+    word-break: break-word;
   }
 
-  .form { margin-top: 32px; text-align: left; }
+  .form { margin-top: 28px; text-align: left; }
   body[dir="rtl"] .form { text-align: right; }
 
   .form-row { margin-bottom: 14px; }
@@ -248,18 +265,20 @@
   .form-row input,
   .form-row textarea {
     width: 100%;
-    padding: 11px 14px;
+    padding: 13px 14px;        /* taller for comfortable touch */
     background: var(--surface2);
     border: 1px solid var(--border);
     border-bottom: 2px solid var(--border);
     border-radius: 2px;
     color: var(--bright);
-    font-size: 14px;
+    font-size: 16px;           /* prevents iOS auto-zoom on focus */
     font-family: 'Barlow', sans-serif;
     font-weight: 500;
     transition: border-color 0.2s, box-shadow 0.2s;
     outline: none;
     direction: inherit;
+    -webkit-appearance: none;  /* remove iOS default styling */
+    appearance: none;
   }
   .form-row input:focus,
   .form-row textarea:focus {
@@ -267,11 +286,12 @@
     border-bottom-color: var(--orange);
     box-shadow: 0 4px 12px rgba(255,107,0,0.08);
   }
-  .form-row textarea { resize: vertical; min-height: 80px; }
+  .form-row textarea { resize: vertical; min-height: 88px; }
 
   .btn {
     width: 100%;
-    padding: 13px;
+    padding: 15px 13px;
+    min-height: 48px;          /* accessible touch target */
     background: var(--orange);
     color: #0F0F0F;
     border: none;
@@ -286,22 +306,35 @@
     transition: background 0.18s, box-shadow 0.18s, transform 0.15s;
     clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
     box-shadow: 0 4px 24px rgba(255,107,0,0.25);
+    touch-action: manipulation;
+    -webkit-appearance: none;
+    appearance: none;
   }
-  .btn:hover {
-    background: var(--orange2);
-    box-shadow: 0 4px 36px rgba(255,107,0,0.4);
-    transform: translateY(-1px);
+  .btn:active { transform: translateY(0); background: var(--orange2); }
+
+  /* Hover effects only where hover is genuinely supported (not touch) */
+  @media (hover: hover) {
+    .btn:hover {
+      background: var(--orange2);
+      box-shadow: 0 4px 36px rgba(255,107,0,0.4);
+      transform: translateY(-1px);
+    }
+    .contact a:hover { color: var(--orange); }
+    .lang-pill:hover {
+      border-color: var(--orange);
+      color: var(--orange);
+      background: rgba(255,107,0,0.07);
+    }
   }
-  .btn:active { transform: translateY(0); }
 
   .contact {
     margin-top: 28px;
-    padding-top: 24px;
+    padding-top: 20px;
     border-top: 1px solid var(--border);
     display: flex;
-    justify-content: center;
-    gap: 28px;
-    flex-wrap: wrap;
+    flex-direction: column;    /* stack vertically on mobile */
+    align-items: center;
+    gap: 4px;
   }
   .contact a {
     color: var(--muted);
@@ -313,15 +346,17 @@
     gap: 7px;
     transition: color 0.2s;
     letter-spacing: 0.5px;
+    min-height: 44px;          /* accessible touch target */
+    padding: 4px 8px;
+    touch-action: manipulation;
   }
-  .contact a:hover { color: var(--orange); }
 
   .wa-icon {
-    width: 18px; height: 18px;
+    width: 20px; height: 20px;
     fill: #25D366;
     flex-shrink: 0;
   }
-  .mail-icon { font-size: 16px; }
+  .mail-icon { font-size: 18px; }
 
   .success {
     display: none;
@@ -345,9 +380,29 @@
   @keyframes fadeDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
 
-  @media (max-width: 520px) {
-    .card { padding: 36px 24px; }
-    .contact { gap: 16px; }
+  /* ── Tablet & up: restore side-by-side layout ── */
+  @media (min-width: 480px) {
+    body { padding: 80px 24px 32px; }
+    .card { padding: 48px 40px; }
+    .contact {
+      flex-direction: row;
+      justify-content: center;
+      gap: 28px;
+    }
+  }
+
+  /* ── Desktop: full original padding ── */
+  @media (min-width: 700px) {
+    body { padding: 60px 24px; }
+    .card { padding: 52px 48px; }
+  }
+
+  /* ── Very small phones (< 360px) ── */
+  @media (max-width: 359px) {
+    .card { padding: 28px 14px; }
+    .ornament-line::before,
+    .ornament-line::after { display: none; }
+    .lang-pill { width: 38px; height: 32px; }
   }
 </style>
 </head>
